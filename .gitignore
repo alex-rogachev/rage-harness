@@ -1,0 +1,12 @@
+.DS_Store
+.env
+.env.*
+*.pem
+*.key
+/backups/
+/artifacts/
+/features/
+/specs-repository/
+/payload/.codex/features/
+/payload/.codex/specs-repository/
+/payload/.codex/harness-backups/

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Implement Approved Rage Feature"
+  short_description: "Implement an explicitly approved Rage feature specification"
+  default_prompt: "Use $rage-implement-approved-feature to implement the active approved Rage feature."
+
+policy:
+  allow_implicit_invocation: false

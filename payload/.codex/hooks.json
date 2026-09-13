@@ -1,0 +1,54 @@
+{
+  "description": "Local phase and approval guardrails for private Rage feature specifications.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruby \"$(git rev-parse --show-toplevel)/.codex/hooks/session_resume.rb\"",
+            "timeout": 10,
+            "statusMessage": "Loading the active Rage feature state",
+            "additionalContextLimit": 3000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "^(Bash|apply_patch)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruby \"$(git rev-parse --show-toplevel)/.codex/hooks/phase_write_guard.rb\"",
+            "timeout": 10,
+            "statusMessage": "Checking the Rage feature phase"
+          },
+          {
+            "type": "command",
+            "command": "ruby \"$(git rev-parse --show-toplevel)/.codex/hooks/specification_state_guard.rb\"",
+            "timeout": 10,
+            "statusMessage": "Checking the approved specification hash"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "ruby \"$(git rev-parse --show-toplevel)/.codex/hooks/specification_state_guard.rb\"",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "ruby \"$(git rev-parse --show-toplevel)/.codex/hooks/completion_gate.rb\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rage Feature Specification"
+  short_description: "Refine features and tasks in the Rage specs repository"
+  default_prompt: "Use $rage-feature-spec-cycle to refine the active Rage feature specification."
