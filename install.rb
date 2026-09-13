@@ -73,4 +73,4 @@ end
 
 puts "Installed #{files.length} harness files into #{target}."
 puts "Updated #{exclude_path}." if missing_patterns.any?
-puts "Next: run ruby .codex/bin/feature_state.rb setup from Rage, review /hooks, and read .codex/HARNESS.md."
+puts "Next: run ruby .codex/bin/feature_state.rb setup from Rage, review /hooks, and read .codex/WORKFLOW_REFERENCE.md."

@@ -39,7 +39,7 @@ class FeatureState
       state_path = File.join(@local, slug, "state.yml")
       if File.exist?(state_path)
         existing = YAML.safe_load(File.read(state_path), aliases: false)
-        raise "Legacy local feature exists. Migrate deliberately; see HARNESS.md" unless existing["version"] == 2
+        raise "Legacy local feature exists. Migrate deliberately; see WORKFLOW_REFERENCE.md" unless existing["version"] == 2
       end
       if command == "create" && !File.exist?(directory)
         title = args.join(" ")
@@ -68,7 +68,7 @@ class FeatureState
     directory = @repo.feature(slug)
     state_path = File.join(@local, slug, "state.yml")
     state = YAML.safe_load(File.read(state_path), aliases: false)
-    raise "Legacy local feature state: migrate explicitly using HARNESS.md" unless state["version"] == 2
+    raise "Legacy local feature state: migrate explicitly using WORKFLOW_REFERENCE.md" unless state["version"] == 2
     spec = File.join(directory, "spec.md")
     phase = state.fetch("phase")
     raise "Invalid local phase" unless %w[draft approved implementing verified].include?(phase)

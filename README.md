@@ -13,6 +13,12 @@ environment; those belong to your development setup or sandbox.
 
 ## How the pieces fit together
 
+This README explains installation and everyday use. The installed
+`<rage>/AGENTS.local.md` contains mandatory agent rules; Codex loads it as project
+context. The installed `<rage>/.codex/WORKFLOW_REFERENCE.md` is read only when
+command details or recovery instructions are needed. This keeps the always-loaded
+rules short without losing the operational reference.
+
 Your work is split across three repositories, each with a different purpose:
 
 | Repository | Purpose |
@@ -152,7 +158,7 @@ offline drafting can continue, but cannot pass the implementation gate.
 Publishing requires write access to the specification remote. If your sandbox
 has no GitHub write credentials, export the changes and publish them from your
 Mac, then sync inside the sandbox. The exact helper commands are in
-[the workflow reference](payload/.codex/HARNESS.md#typical-prompts).
+[the workflow reference](payload/.codex/WORKFLOW_REFERENCE.md#approval-sequence).
 
 ### 4. Implement the selected task
 
@@ -204,8 +210,12 @@ Forced replacement backs up differing files under
 `<rage>/.codex/harness-backups/` and preserves the specification checkout, feature
 state, and evidence. Start a new
 Codex task after upgrading. For an older version-1 private-specification workflow,
-follow the [migration instructions](payload/.codex/HARNESS.md#upgrade-from-private-specifications)
+follow the [migration instructions](payload/.codex/WORKFLOW_REFERENCE.md#upgrade-from-private-specifications)
 first; old approvals are not transferred automatically.
+
+The installer does not remove obsolete files. If upgrading from a version with
+`<rage>/.codex/HARNESS.md`, preserve any custom notes and remove that old reference
+manually after confirming `WORKFLOW_REFERENCE.md` is installed.
 
 ## Test the harness
 
@@ -219,5 +229,5 @@ The regression suite uses a disposable local Git remote to exercise the workflow
 it does not publish to GitHub. Passing it does not replace checking that your Codex
 installation loads the agents and hooks correctly.
 
-See [HARNESS.md](payload/.codex/HARNESS.md) for the complete command reference,
+See [WORKFLOW_REFERENCE.md](payload/.codex/WORKFLOW_REFERENCE.md) for the complete command reference,
 state transitions, and specification-gap procedures.

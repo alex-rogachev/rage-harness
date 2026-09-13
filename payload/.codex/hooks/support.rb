@@ -29,7 +29,7 @@ module RageHarnessHook
     directory = File.join(FEATURES_DIR, slug)
     state_path = File.join(directory, "state.yml")
     state = YAML.safe_load(File.read(state_path), aliases: false) || {}
-    raise "Legacy local state: migrate using HARNESS.md" unless state["version"] == 2
+    raise "Legacy local state: migrate using WORKFLOW_REFERENCE.md" unless state["version"] == 2
     repository = SpecRepository.new(ROOT)
     spec_directory = repository.feature(slug)
     spec_path = File.join(spec_directory, "spec.md")
