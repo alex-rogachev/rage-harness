@@ -3,6 +3,61 @@
 
 require_relative "support"
 
+GIT_MUTATIONS = %w[add am apply checkout clean commit merge mv push rebase reset restore revert rm switch].freeze
+SPECIFICATION_PUBLICATION_COMMANDS = %w[add commit push].freeze
+
+def specification_publication_command?(command, initial_directory, repository_path)
+  return false if command.match?(/[\n`]/) || command.include?("$(")
+
+  current_directory = File.expand_path(initial_directory)
+  saw_publication = false
+
+  command.split(/\s*(?:&&|;|\|\|)\s*/).each do |segment|
+    words = Shellwords.split(segment)
+    next if words.empty?
+
+    if words.first == "cd" && words.length == 2
+      current_directory = File.expand_path(words.last, current_directory)
+      next
+    end
+
+    unless words.first == "git"
+      return false if segment.match?(
+        /(?:^|\s)(?:rm|mv|cp|touch|mkdir|install|ln|chmod|chown|truncate|dd|rsync)\b|\b(?:sed\s+-i|perl\s+-pi|bundle\s+(?:install|update)|gem\s+(?:install|update)|ruby\s+-e|python\d*\s+-c|node\s+-e|apply_patch)\b|(?:^|[^<])>{1,2}/
+      )
+      next
+    end
+
+    index = 1
+    git_directory = current_directory
+    while words[index]&.start_with?("-")
+      option = words[index]
+      if option == "-C"
+        return false unless words[index + 1]
+        git_directory = File.expand_path(words[index + 1], git_directory)
+        index += 2
+      elsif option == "-c"
+        return false unless words[index + 1]
+        index += 2
+      elsif option.start_with?("--git-dir", "--work-tree")
+        return false
+      else
+        index += 1
+      end
+    end
+
+    subcommand = words[index]
+    next unless GIT_MUTATIONS.include?(subcommand)
+    return false unless SPECIFICATION_PUBLICATION_COMMANDS.include?(subcommand)
+    return false unless RageHarnessHook.inside?(git_directory, repository_path)
+    saw_publication = true
+  end
+
+  saw_publication
+rescue ArgumentError
+  false
+end
+
 input = RageHarnessHook.input
 if RageHarnessHook.helper_call?(input)
   RageHarnessHook.allow
@@ -82,14 +137,20 @@ unless tool_name == "Bash"
 end
 
 mutating_command = command.match?(
-  /(?:^|[;&|]\s*)(?:rm|mv|cp|touch|mkdir|install|ln|chmod|chown|truncate|dd|rsync)\b|\b(?:sed\s+-i|perl\s+-pi|git\s+(?:add|am|apply|checkout|clean|commit|merge|mv|rebase|reset|restore|revert|rm|switch)|bundle\s+(?:install|update)|gem\s+(?:install|update)|ruby\s+-e|python\d*\s+-c|node\s+-e|apply_patch)\b|(?:^|[^<])>{1,2}/
+  /(?:^|[;&|]\s*)(?:rm|mv|cp|touch|mkdir|install|ln|chmod|chown|truncate|dd|rsync)\b|\b(?:sed\s+-i|perl\s+-pi|git(?:\s+-C\s+\S+|\s+-c\s+\S+)*\s+(?:add|am|apply|checkout|clean|commit|merge|mv|push|rebase|reset|restore|revert|rm|switch)|bundle\s+(?:install|update)|gem\s+(?:install|update)|ruby\s+-e|python\d*\s+-c|node\s+-e|apply_patch)\b|(?:^|[^<])>{1,2}/
 )
 
 protected_reference = command.include?("specs-repository") || command.include?(RageHarnessHook.relative(active.fetch(:spec_path))) ||
   command.include?(RageHarnessHook.relative(active.fetch(:state_path))) ||
   command.include?(RageHarnessHook.relative(RageHarnessHook::CURRENT_PATH))
 
-if phase == "implementing"
+if phase == "draft" && mutating_command
+  if specification_publication_command?(command, input["cwd"] || RageHarnessHook::ROOT, active.fetch(:repository).path)
+    RageHarnessHook.allow
+  else
+    RageHarnessHook.deny("During draft, code repository changes and pushes are blocked. Only git add, commit, and push targeting the specification repository are allowed for explicitly authorized publication.")
+  end
+elsif phase == "implementing"
   if mutating_command && (protected_reference || state.dig("implementation", "paused_for_spec_gap"))
     RageHarnessHook.deny("The active specification and state files cannot be changed through Bash during implementation.")
   else

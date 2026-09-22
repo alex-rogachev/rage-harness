@@ -80,6 +80,14 @@ class RepositoryWorkflowTest < Minitest::Test
     JSON.parse(output)
   end
 
+  def bash_hook(command, cwd = @root)
+    input = {"cwd" => cwd, "hook_event_name" => "PreToolUse", "tool_name" => "Bash",
+      "tool_input" => {"command" => command}}
+    output, error, result = invoke(".codex/hooks/phase_write_guard.rb", [], JSON.generate(input))
+    assert result.success?, error
+    JSON.parse(output)
+  end
+
   def test_lifecycle_and_gap_does_not_change_canonical_task_status
     command("approve")
     command("begin-implementation")
@@ -152,6 +160,15 @@ class RepositoryWorkflowTest < Minitest::Test
     output, error, result = invoke(".codex/hooks/specification_state_guard.rb", [], JSON.generate(input))
     assert result.success?, error
     assert_equal({}, JSON.parse(output), "Stale approval must not block recovery commands")
+  end
+
+  def test_draft_allows_only_specification_repository_publication
+    assert_equal({}, bash_hook("git -C #{@repo} add features/example && git -C #{@repo} commit -m publish && git -C #{@repo} push origin main"))
+    assert_equal({}, bash_hook("git add features/example && git commit -m publish && git push origin main", @repo))
+
+    assert_equal "deny", bash_hook("git push origin main").dig("hookSpecificOutput", "permissionDecision")
+    assert_equal "deny", bash_hook("git -C #{@root} push origin main").dig("hookSpecificOutput", "permissionDecision")
+    assert_equal "deny", bash_hook("git -C #{@repo} add features/example && git push origin main").dig("hookSpecificOutput", "permissionDecision")
   end
 
   def test_create_uses_remote_template_and_legacy_state_is_preserved

@@ -33,7 +33,7 @@ Develop observable behavior and acceptance criteria over as many iterations as t
 Do not edit Rage implementation while locally drafting.
 
 After a pass, run `feature_state.rb refresh` and report unresolved questions. A finished pass does not imply approval.
-Commit, push, or open a specifications PR only when the user requests publication. Use Git in the specification checkout; never stage its files in Rage.
+Commit, push, or open a specifications PR only when the user requests publication. Use Git in the specification checkout; never stage its files in Rage. During draft, the shell guard permits only `git add`, `git commit`, and `git push` when their working directory is the specification checkout. Use that checkout as the command working directory or pass it explicitly with `git -C .codex/specs-repository ...`.
 
 ## Explicit judgment
 

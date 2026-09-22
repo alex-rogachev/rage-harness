@@ -154,7 +154,9 @@ commands resolve their scripts from the current Git root; starting inside the
 nested specification repository can resolve the wrong location. Review /hooks
 after installation or upgrades, and verify behavior in a disposable workflow.
 
-Hooks are limited guardrails, not filesystem isolation. The current shell guard
-uses text matching and may block legitimate publication commands or miss equivalent
-forms. Do not bypass it or broaden sandbox permissions to publish: report the
-conflict and use an explicitly authorized host-side publication workflow.
+Hooks are limited guardrails, not filesystem isolation. During draft, the shell
+guard allows explicitly authorized specification publication through `git add`,
+`git commit`, and `git push` only when Git targets `.codex/specs-repository/`.
+It blocks equivalent Rage code changes and pushes. Use the specification checkout
+as the command working directory or pass it with `git -C`; do not bypass the guard
+or broaden sandbox permissions to publish.
