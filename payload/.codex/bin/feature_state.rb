@@ -76,7 +76,8 @@ class FeatureState
       puts slug
       return
     elsif command == "status"
-      puts YAML.dump(state.merge("canonical_status" => @repo.status(spec), "current_sha256" => @repo.digest,
+      task_status = state["task"] && @repo.status(File.join(directory, "tasks", state["task"]))
+      puts YAML.dump(state.merge("task_status" => task_status, "current_sha256" => @repo.digest,
         "checkout_commit" => @repo.git("rev-parse", "HEAD"), "checkout_changes" => @repo.git("status", "--short")))
       return
     end
@@ -106,7 +107,6 @@ class FeatureState
       # unpublished specifications as the implementation authority.
       commit = @repo.sync
       hash = @repo.digest
-      raise "Canonical feature must have status: implementation" unless @repo.status(spec) == "implementation"
       raise "Select an incomplete task first" unless state["task"]
       raise "Selected task is not todo" unless @repo.status(File.join(directory, "tasks", state["task"])) == "todo"
       if command == "approve"

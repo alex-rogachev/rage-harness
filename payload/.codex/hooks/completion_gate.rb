@@ -25,8 +25,8 @@ claims_completion = message.match?(/\b(?:feature|work|task|implementation)\s+(?:
   message.match?(/\b(?:fully\s+)?implemented\b/) ||
   message.match?(/\ball (?:required )?(?:checks|tests) (?:pass|passed)\b/)
 
-reason = if phase == "draft" && active.fetch(:repository).status(active.fetch(:spec_path)) == "draft" && claims_approval && !negated
-  "The feature is still draft. Revise the response so it does not claim approval; only the user can approve it."
+reason = if phase == "draft" && claims_approval && !negated
+  "The selected task has not been approved locally. Revise the response so it does not claim approval; only the user can approve it."
 elsif phase == "implementing" && claims_completion && !negated
   "The feature is not in verified state. Run $rage-contribution-check and record verification, or revise the response to state precisely what remains unverified."
 end

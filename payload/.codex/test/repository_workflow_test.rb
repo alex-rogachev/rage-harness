@@ -21,10 +21,10 @@ class RepositoryWorkflowTest < Minitest::Test
     git(@publisher, "config", "user.name", "Harness Fixture")
     git(@publisher, "config", "user.email", "fixture@example.invalid")
     write("AGENTS.md", "Repository instructions\n")
-    write("templates/feature.md", "---\ntitle: Feature name\nstatus: draft\n---\n# Feature name\n")
+    write("templates/feature.md", "---\ntitle: Feature name\n---\n# Feature name\n")
     write("templates/task.md", "---\nstatus: todo\n---\n")
     write("templates/adr.md", "---\nstatus: proposed\n---\n")
-    write("features/example/spec.md", "---\nstatus: implementation\n---\nFeature\n")
+    write("features/example/spec.md", "---\ntitle: Example\n---\nFeature\n")
     write("features/example/tasks/01-work.md", "---\nstatus: todo\n---\nWork\n")
     write("features/example/adr/001-choice.md", "---\nstatus: accepted\n---\nChoice\n")
     publish
@@ -80,7 +80,7 @@ class RepositoryWorkflowTest < Minitest::Test
     JSON.parse(output)
   end
 
-  def test_lifecycle_and_gap_does_not_change_canonical_status
+  def test_lifecycle_and_gap_does_not_change_canonical_task_status
     command("approve")
     command("begin-implementation")
     assert_equal "implementing", state["phase"]
@@ -110,13 +110,17 @@ class RepositoryWorkflowTest < Minitest::Test
     command("begin-implementation")
   end
 
-  def test_draft_and_done_task_cannot_be_implemented
-    write("features/example/spec.md", "---\nstatus: draft\n---\nFeature\n")
+  def test_parent_spec_status_is_not_required_and_done_task_cannot_be_implemented
+    write("features/example/spec.md", "---\ntitle: Revised example\n---\nFeature\n")
     publish
-    assert_includes command("approve", success: false), "status: implementation"
-    write("features/example/spec.md", "---\nstatus: implementation\n---\nFeature\n")
+    command("sync")
+    command("refresh")
+    command("approve")
+    command("reopen", "Select completed task")
     write("features/example/tasks/01-work.md", "---\nstatus: done\n---\nWork\n")
     publish
+    command("sync")
+    command("refresh")
     assert_includes command("approve", success: false), "not todo"
   end
 

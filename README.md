@@ -143,9 +143,11 @@ for you and the author; even a positive verdict does not approve implementation.
 Once you are satisfied, ask the author to prepare the specification for
 implementation. There are two separate approval steps:
 
-1. Publish the agreed documents with feature status `implementation` to the
-   specification repository's `main` branch. Ask explicitly for publication;
-   drafting or reviewing a document does not authorize a commit or push.
+1. Publish the agreed parent specification and task documents to the
+   specification repository's `main` branch. Parent specifications have no
+   lifecycle status; each small task is approved and implemented independently.
+   Ask explicitly for publication; drafting or reviewing a document does not
+   authorize a commit or push.
 2. Sync that published revision into the specification checkout, select a `todo`
    task, and explicitly approve it locally before asking for implementation.
 
@@ -179,8 +181,8 @@ publish code or mean that a contribution has merged. Publishing Rage code is a
 separate, explicitly requested action.
 
 After the implementation merges, request an update to the specification repository
-to record the result and mark the completed task `done`. The feature becomes
-`done` only when all its tasks and acceptance criteria are complete.
+to record the result and mark the completed task `done`. The parent task checklist
+can summarize progress without imposing a feature-wide implementation gate.
 
 ## Agent responsibilities and reasoning
 

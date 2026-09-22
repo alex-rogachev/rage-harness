@@ -27,7 +27,7 @@ Use the Specification Author for the requested iteration, following the efficien
 ## Iterative authoring
 
 Edit the active feature under `.codex/specs-repository/features/<slug>/`. Use the repository's templates/feature.md, templates/task.md, and templates/adr.md; do not generate another authoritative document under .codex/features/.
-Feature status is draft, implementation, or done. Task status is todo or done. Preserve existing IDs, links, statuses, and merged evidence unless the user asks to change them.
+Parent feature specifications have no lifecycle status. Task status is todo or done, so each small, reviewable task can move through approval and implementation independently. Preserve existing IDs, links, task and ADR statuses, and merged evidence unless the user asks to change them.
 
 Develop observable behavior and acceptance criteria over as many iterations as the user needs. Break implementation into self-contained tasks; record significant decisions in ADRs. Address applicable security, lifecycle, compatibility, performance, Fiber/Iodine and race risks. Do not invent consequential unresolved requirements.
 Do not edit Rage implementation while locally drafting.
@@ -49,8 +49,8 @@ Any Markdown change in the specification repository invalidates the recorded rev
 
 ## Approval and implementation handoff
 
-Explicit user approval authorizes preparing the feature's canonical status as implementation. Publishing that change is a separate action unless already requested.
-Implementation consumes the published main revision: once the agreed documents and status are on main, sync, read the revision, select the task, and refresh:
+Explicit user approval applies to one selected task and the specification context inspected with it. Publishing agreed document changes is a separate action unless already requested.
+Implementation consumes the published main revision: once the agreed documents are on main, sync, read the revision, select the task, and refresh:
 
 ```bash
 ruby .codex/bin/feature_state.rb select-task <task-filename.md>
@@ -58,5 +58,5 @@ ruby .codex/bin/feature_state.rb refresh
 ruby .codex/bin/feature_state.rb approve
 ```
 
-Run approve only with explicit user approval of that revision. The command requires a published feature with status implementation and a selected todo task, records the commit and a digest of all Markdown context, and leaves the canonical status unchanged.
+Run approve only with explicit user approval of that revision. The command requires a selected published todo task, records the commit and a digest of all Markdown context, and does not modify canonical documents.
 Do not begin implementation until requested.

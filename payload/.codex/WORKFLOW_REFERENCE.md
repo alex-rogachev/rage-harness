@@ -35,11 +35,11 @@ in that checkout; switching the pointer changes which feature its hooks enforce.
 | `create SLUG "TITLE"` | Create a feature from its repository template if absent, initialize local state, and activate it. |
 | `activate SLUG` | Select an existing feature; preserve any existing version-2 local state. |
 | `current` | Print the active feature slug. |
-| `status` | Show local state, canonical feature status, current document hash, checkout commit and changes. Does not fetch. |
+| `status` | Show local state, selected task status, current document hash, checkout commit and changes. Does not fetch. |
 | `select-task FILE.md` | Select an existing task filename under the active feature's tasks/ directory. Requires local draft; clears approval and review. |
 | `refresh` | Recompute the inspected Markdown hash during draft and update review staleness. Does not fetch. |
 | `record-review VERDICT REPORT` | Record ready, revisions_required or blocked with the current document hash. Never approves work. |
-| `approve` | From draft, approve the selected todo task against the inspected, published implementation feature. |
+| `approve` | From draft, approve the selected todo task against the inspected, published specification context. |
 | `begin-implementation` | Move approved to implementing after checking the current published specification. |
 | `report-gap REPORT` | Pause implementing and record a gap report. |
 | `resume` | Resume a paused implementation after the user's decision, with unchanged approved context. |
@@ -53,8 +53,8 @@ the user instructions specified in AGENTS.local.md.
 
 ## Approval sequence
 
-After the agreed specification is published on main with feature status
-`implementation`, activate the feature and inspect the synced documents:
+After the agreed specification and task are published on main, activate the
+feature and inspect the synced documents:
 
 ```bash
 ruby .codex/bin/feature_state.rb sync
@@ -90,9 +90,9 @@ workflow checkpoint, so the agent must provide actual check evidence first.
 Local phase is `draft → approved → implementing → verified`. Reopening returns
 to draft. Judgment leaves the phase unchanged; a gap is a pause within implementing.
 
-The specification repository separately uses feature statuses
-`draft / implementation / done` and task statuses `todo / done`. Local phase
-does not overwrite those documents or prove that implementation merged.
+The specification repository uses task statuses `todo / done`; parent feature
+specifications have no lifecycle status. Local phase does not overwrite those
+documents or prove that implementation merged.
 
 Approval records the selected task, source commit and SHA-256 of all Markdown
 files in the specification repository, including instructions and shared ADRs.

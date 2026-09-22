@@ -42,9 +42,9 @@ Only after all required checks pass, run the following command. If required chec
 ruby .codex/bin/feature_state.rb verify
 ```
 
-This verifies only the selected task locally and fetches published main again to check for specification drift. It never marks canonical documents done. After implementation is merged, an explicitly requested specs update may mark the task done, complete its Result with implementation links, and update the parent checklist. Mark the feature done only when every task is complete and feature-level acceptance criteria are verified.
+This verifies only the selected task locally and fetches published main again to check for specification drift. It never marks canonical documents done. After implementation is merged, an explicitly requested specs update may mark the task done, complete its Result with implementation links, and update the parent checklist.
 
-For that requested post-merge document update, run `feature_state.rb reopen "Record merged implementation evidence"` to open the local editing gate. The previous verification is preserved as last_verification. This command does not change canonical status or publish anything.
+For that requested post-merge document update, run `feature_state.rb reopen "Record merged implementation evidence"` to open the local editing gate. The previous verification is preserved as last_verification. This command does not change canonical documents or publish anything.
 
 Report:
 

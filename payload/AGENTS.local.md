@@ -18,9 +18,9 @@ Read `.codex/WORKFLOW_REFERENCE.md` when using state commands or recovering a wo
 - Use the Specification Author for user-directed drafting iterations. An iteration does not imply readiness or approval. Do not edit Rage source or RSpec files while locally drafting.
 - Invoke the read-only Specification Judge **only on explicit user request**. Its verdict is advisory; it cannot approve work.
 - Only the user can authorize local approval and, separately, implementation. Use the state helper rather than editing state files directly.
-- Implement one selected `todo` task through the Core Implementer only when its feature is `implementation` on published main and the inspected revision is approved locally. Sync before approval, implementation and verification; never discard local edits to make sync pass.
+- Implement one selected `todo` task through the Core Implementer only when the inspected published revision is approved locally. Parent specifications have no lifecycle status and do not gate their independently reviewable tasks. Sync before approval, implementation and verification; never discard local edits to make sync pass.
 - Approval binds the selected task and all specification-repository Markdown. Changed context requires inspection and reapproval; never silently adopt new requirements.
-- Do not edit approved specifications during implementation. Local `verified` is only a task checkpoint. Remote `done` requires merged implementation evidence and completed task/feature criteria under the specification repository's rules.
+- Do not edit approved specifications during implementation. Local `verified` is only a task checkpoint. Remote task `done` requires merged implementation evidence and completed task criteria under the specification repository's rules.
 
 ## Gaps
 
