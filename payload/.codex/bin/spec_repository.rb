@@ -30,7 +30,13 @@ class SpecRepository
     raise "Specification checkout cannot be a symlink" if File.symlink?(path)
     raise "Not a separate specification checkout" unless File.realpath(git("rev-parse", "--show-toplevel")) == File.realpath(path)
     origin = git("remote", "get-url", "origin")
-    unless [URL, URL.delete_suffix(".git"), "git@github.com:rage-rb-fans/rage-feature-specs.git"].include?(origin)
+    allowed_origins = [
+      URL,
+      URL.delete_suffix(".git"),
+      "git@github.com:rage-rb-fans/rage-feature-specs.git",
+      "ssh://git@ssh.github.com:443/rage-rb-fans/rage-feature-specs.git"
+    ]
+    unless allowed_origins.include?(origin)
       raise "Unexpected specification origin: #{origin}"
     end
     %w[AGENTS.md templates/feature.md templates/task.md templates/adr.md].each do |file|
