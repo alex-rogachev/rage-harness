@@ -1,37 +1,30 @@
 ---
 name: rage-implement-approved-feature
-description: Implement a selected Rage task from the approved published feature-specs repository revision, with RSpec coverage and explicit gap handling.
+description: Implement one named ready-for-development Rage task from the published feature-specs repository, with RSpec coverage and explicit gap handling.
 ---
 
-# Implement an approved Rage task
+# Implement a ready-for-development Rage task
 
-Use after an explicit implementation request. The source of truth is https://github.com/rage-rb-fans/rage-feature-specs on main, checked out at .codex/specs-repository/.
+Use only after the user explicitly requests implementation and provides or confirms a repository-relative task path.
 
-Run `ruby .codex/bin/feature_state.rb status`, then `ruby .codex/bin/feature_state.rb begin-implementation`.
-The gate fetches main and requires: a clean matching checkout; selected task status todo; local approval bound to that task and the unchanged Markdown context. The parent specification has no lifecycle status and does not block the task.
-Offline or divergent state must be resolved before implementation starts.
-
-Use rage_core_implementer for the selected task, following the efficient handoff instructions in AGENTS.local.md. The implementer must read the specification repository's AGENTS.md, the complete parent spec.md, selected task, and every ADR linked by either, plus Rage's architecture/contribution guidance, relevant code, and neighboring RSpec examples. The coordinator checks the gate and resulting diff/evidence without duplicating the implementation. One task is the default implementation scope; include related changes only when necessary.
-
-Preserve Rage's lean happy path, boot-time computation, feature isolation, Ruby 3.3.0 compatibility, public API and Fiber/Iodine semantics. Trace task acceptance criteria and applicable feature criteria to code/tests. Add required YARD and changelog changes, and run the task's Verification commands plus focused Rage tests.
-
-## Gaps and upstream changes
-
-Do not edit canonical specifications during implementation. When a material requirement is missing or conflicting, stop and preserve code. Write the impact, options and recommendation under .codex/features/<slug>/evidence/, then run:
+From the Rage root, run:
 
 ```bash
-ruby .codex/bin/feature_state.rb report-gap <report-path>
+ruby .codex/bin/spec_workflow.rb check-ready features/SLUG/tasks/TASK.md
 ```
 
-Await the user's choice:
-- Amend: reopen locally, revise canonical feature/task/ADR documents through the authoring workflow, publish when requested, then sync and obtain approval of the revised main version.
-- Constrain or defer within the existing approved requirements: record the user's direction in local evidence and resume. Significant durable decisions belong in the specs repository through an authorized amendment.
-- A change to observable behavior, API, acceptance criteria, errors, security, concurrency, persistence, compatibility or scope requires reapproval.
+The gate fetches `main` and requires a clean published specification checkout and task status `ready-for-development`. Retain the reported specification commit in the implementation handoff.
 
-Judge runs remain explicit-only. Never automatically rerun it.
-If upstream changes invalidate the context digest, inspect the new documents and reapprove; never silently adopt new requirements.
+Use `rage_core_implementer` for the named task. It must read the specification repository's `AGENTS.md`, complete task, parent `spec.md`, every ADR linked by either, Rage's architecture/contribution guidance, relevant code, and neighboring RSpec examples.
 
-## Handoff
+Implement the smallest defensible change scoped to that task. Preserve Rage's lean happy path, boot-time computation, feature isolation, Ruby 3.3.0 compatibility, public API, and Fiber/Iodine semantics. Trace acceptance criteria to code and tests, add required YARD and changelog updates, and run the task's verification commands plus focused Rage tests.
 
-Report implementation, task/feature coverage, verification evidence and pending checks. Use $rage-contribution-check for final local verification.
-Local verified does not mark the remote task done. Only after implementation is merged, and when requested, update task Result links, task status/criteria, and the parent task checklist.
+## Gaps and drift
+
+Do not edit specification documents while implementing. For a material gap, stop and preserve the code. Record the affected requirements, impact, options, and recommendation under `.codex/specs-repository/.workflow/evidence/`, then await the user's decision.
+
+An amendment returns the task to `draft`. Revise and publish it as `ready-for-development`, then rerun `check-ready` before resuming. A constraint or deferral within unchanged requirements may resume after recording the user's direction. Significant durable decisions belong in an ADR.
+
+Before final handoff, rerun `check-ready`. If its specification commit differs from the implementation handoff, inspect the published changes and obtain renewed user direction rather than silently adopting them.
+
+Report implementation, task and parent-criterion coverage, exact verification evidence, skipped checks, and unresolved risks. Use `$rage-contribution-check` for final local verification. Do not mark the task `done`; that happens only after merge.

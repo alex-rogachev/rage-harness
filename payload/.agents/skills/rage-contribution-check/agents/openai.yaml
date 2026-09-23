@@ -1,4 +1,4 @@
 interface:
   display_name: "Rage Contribution Check"
   short_description: "Verify a Rage framework contribution before handoff"
-  default_prompt: "Use $rage-contribution-check to verify the active Rage framework contribution."
+  default_prompt: "Use $rage-contribution-check to verify a Rage contribution against its named task."

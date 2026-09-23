@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-require "digest"
 require "fileutils"
 require "open3"
 require "yaml"
@@ -27,7 +26,7 @@ class SpecRepository
   end
 
   def validate!
-    raise "Run feature_state.rb setup first" unless File.directory?(path)
+    raise "Run spec_workflow.rb setup first" unless File.directory?(path)
     raise "Specification checkout cannot be a symlink" if File.symlink?(path)
     raise "Not a separate specification checkout" unless File.realpath(git("rev-parse", "--show-toplevel")) == File.realpath(path)
     origin = git("remote", "get-url", "origin")
@@ -64,18 +63,4 @@ class SpecRepository
     data.fetch("status")
   end
 
-  # Includes shared ADRs and instructions. Conservatively invalidates approval
-  # on any Markdown change, even changes to another feature.
-  def digest
-    validate!
-    hash = Digest::SHA256.new
-    Dir.glob(File.join(path, "**", "*.md"), File::FNM_DOTMATCH).sort.each do |file|
-      next if file.start_with?(File.join(path, ".git") + "/")
-      raise "Document escapes checkout: #{file}" unless File.realpath(file).start_with?(File.realpath(path) + "/")
-      name = file.delete_prefix(path + "/")
-      contents = File.binread(file)
-      hash << "#{name.bytesize}:#{name}#{contents.bytesize}:" << contents
-    end
-    hash.hexdigest
-  end
 end

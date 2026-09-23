@@ -22,6 +22,16 @@ abort "Missing installer payload at #{payload}" unless Dir.exist?(payload)
 files = Dir.glob(File.join(payload, "**", "*"), File::FNM_DOTMATCH)
   .reject { |path| %w[. ..].include?(File.basename(path)) || File.directory?(path) }
 
+obsolete = %w[
+  .codex/bin/feature_state.rb
+  .codex/hooks/completion_gate.rb
+  .codex/hooks/phase_write_guard.rb
+  .codex/hooks/session_resume.rb
+  .codex/hooks/specification_state_guard.rb
+  .codex/hooks/support.rb
+]
+obsolete_existing = obsolete.select { |relative| File.file?(File.join(target, relative)) }
+
 conflicts = files.each_with_object([]) do |source, found|
   relative = Pathname.new(source).relative_path_from(Pathname.new(payload)).to_s
   destination = File.join(target, relative)
@@ -37,9 +47,9 @@ if conflicts.any? && !force
   MESSAGE
 end
 
-if conflicts.any?
+if conflicts.any? || obsolete_existing.any?
   backup = File.join(target, ".codex", "harness-backups", "#{Time.now.utc.strftime('%Y%m%dT%H%M%S')}-#{Process.pid}")
-  conflicts.each do |relative|
+  (conflicts + obsolete_existing).uniq.each do |relative|
     destination = File.join(backup, relative)
     FileUtils.mkdir_p(File.dirname(destination))
     FileUtils.cp(File.join(target, relative), destination)
@@ -53,6 +63,8 @@ files.each do |source|
   FileUtils.mkdir_p(File.dirname(destination))
   FileUtils.cp(source, destination)
 end
+
+obsolete_existing.each { |relative| FileUtils.rm_f(File.join(target, relative)) }
 
 git_path, git_error, git_result = Open3.capture3("git", "-C", target, "rev-parse", "--git-path", "info/exclude")
 abort "Cannot locate local Git excludes: #{git_error}" unless git_result.success?
@@ -73,4 +85,4 @@ end
 
 puts "Installed #{files.length} harness files into #{target}."
 puts "Updated #{exclude_path}." if missing_patterns.any?
-puts "Next: run ruby .codex/bin/feature_state.rb setup from Rage, review /hooks, and read .codex/WORKFLOW_REFERENCE.md."
+puts "Next: run ruby .codex/bin/spec_workflow.rb setup from Rage and read .codex/WORKFLOW_REFERENCE.md."

@@ -1,7 +1,7 @@
 interface:
-  display_name: "Implement Approved Rage Feature"
-  short_description: "Implement an explicitly approved Rage feature specification"
-  default_prompt: "Use $rage-implement-approved-feature to implement the active approved Rage feature."
+  display_name: "Implement Ready Rage Task"
+  short_description: "Implement a ready-for-development Rage task"
+  default_prompt: "Use $rage-implement-approved-feature to implement a named ready-for-development Rage task."
 
 policy:
   allow_implicit_invocation: false
